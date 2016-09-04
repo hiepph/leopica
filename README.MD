@@ -3,7 +3,7 @@ We're all made of stardust!
 
 ## Setup
 + Uncomment your IMU sensor board in `Multiwii/config.h`.
-For example  with GY-251, I uncomment this line:
+For example  with GY-521, I uncomment this line:
 ```
 // #define GY_521
 ```
