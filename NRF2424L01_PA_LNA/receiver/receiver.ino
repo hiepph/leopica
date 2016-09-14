@@ -13,16 +13,20 @@ RF24 radio(7, 8);
 const byte rxAddr[6] = "00001";
 
 void setup() {
-  radio.begin();
-  radio.setRetries(15, 15);
-  radio.openWritingPipe(rxAddr);
+  while (!Serial) {}
+  Serial.begin(115200);
 
-  radio.stopListening();
+  radio.begin();
+  radio.openReadingPipe(0, rxAddr);
+
+  radio.startListening();
 }
 
 void loop() {
-  const char text[] = "Hello World";
-  radio.write(&text, sizeof(text));
+  if (radio.available()) {
+    char text[32] = {0};
+    radio.read(&text, sizeof(text));
 
-  delay(1000);
+    Serial.println(text);
+  }
 }
