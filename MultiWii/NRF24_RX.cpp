@@ -20,7 +20,7 @@ RF24Data nrf24Data;
 RF24AckPayload nrf24AckPayload;
 extern RF24AckPayload nrf24AckPayload;
 
-void resetRF24Data() 
+void resetRF24Data()
 {
   nrf24Data.throttle = 0;
   nrf24Data.yaw = 128;
@@ -31,7 +31,7 @@ void resetRF24Data()
   nrf24Data.switches = 0;
 }
 
-void resetRF24AckPayload() 
+void resetRF24AckPayload()
 {
   nrf24AckPayload.lat = 0;
   nrf24AckPayload.lon = 0;
@@ -53,11 +53,11 @@ void NRF24_Init() {
   radio.enableAckPayload();
 
   radio.openReadingPipe(1,pipe);
-  radio.startListening();  
+  radio.startListening();
 }
 
 void NRF24_Read_RC() {
-  
+
   static unsigned long lastRecvTime = 0;
 
   nrf24AckPayload.lat = 35.62;
@@ -67,7 +67,7 @@ void NRF24_Read_RC() {
   nrf24AckPayload.roll = att.angle[ROLL];
   nrf24AckPayload.alt = alt.EstAlt;
   memcpy(&nrf24AckPayload.flags, &f, 1); // first byte of status flags
-	
+
   unsigned long now = millis();
   while ( radio.available() ) {
     radio.writeAckPayload(1, &nrf24AckPayload, sizeof(RF24AckPayload));
@@ -78,12 +78,12 @@ void NRF24_Read_RC() {
     // signal lost?
     resetRF24Data();
   }
-  
+
   nrf24_rcData[THROTTLE] = map(nrf24Data.throttle, 0, 255, 1000, 2000);
   nrf24_rcData[YAW] =      map(nrf24Data.yaw,      0, 255, 1000, 2000);
   nrf24_rcData[PITCH] =    map(nrf24Data.pitch,    0, 255, 1000, 2000);
   nrf24_rcData[ROLL] =     map(nrf24Data.roll,     0, 255, 1000, 2000);
-  
+
 }
 
 #endif

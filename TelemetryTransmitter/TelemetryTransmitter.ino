@@ -1,4 +1,4 @@
-/*  
+/*
 A basic 4 channel transmitter using the nRF24L01 module.
 */
 
@@ -9,7 +9,7 @@ A basic 4 channel transmitter using the nRF24L01 module.
 
 const uint64_t pipeOut = 0xE8E8F0F0E1LL;
 
-RF24 radio(9, 10);
+RF24 radio(7, 8);
 
 const byte serialHeader[4] = {255,254,253,252};
 
@@ -31,14 +31,14 @@ struct AckPayload {
   float lon;
   int16_t heading;
   int16_t pitch;
-  int16_t roll;  
+  int16_t roll;
   int32_t alt;
   byte flags;
 };
 
 AckPayload ackPayload;
 
-void resetRadioData() 
+void resetRadioData()
 {
   radioData.throttle = 127;
   radioData.yaw = 127;
@@ -53,7 +53,7 @@ void setup()
 {
   Serial.begin(57600);
   printf_begin();
-  
+
   radio.begin();
   radio.setDataRate(RF24_250KBPS);
   radio.setAutoAck(1);                    // Ensure autoACK is enabled
@@ -62,7 +62,7 @@ void setup()
   radio.openWritingPipe(pipeOut);
 
   resetRadioData();
-  
+
   radio.printDetails();
 }
 
@@ -106,10 +106,10 @@ void adjustAckPayloadValues()
 
 int pps = 0;
 
-void writeDataToSerial() 
+void writeDataToSerial()
 {
   cleanData();
-  
+
   /*
   Serial.print("  Pitch "); Serial.print(ackPayload.pitch);
   Serial.print("  Roll ");  Serial.print(ackPayload.roll);
@@ -118,7 +118,7 @@ void writeDataToSerial()
   Serial.print("  Flags "); Serial.print(ackPayload.flags);
   Serial.print("  PPS ");   Serial.println(pps);
   */
-    
+
   Serial.write(serialHeader, 4);
   Serial.write((uint8_t*)&radioData, sizeof(RadioData));
   Serial.write((uint8_t*)&ackPayload, sizeof(AckPayload));
@@ -136,8 +136,8 @@ int ppsCounter = 0;
 void loop()
 {
   boolean mode1 = !digitalRead(2);
-  
-  // The calibration numbers used here should be measured 
+
+  // The calibration numbers used here should be measured
   // for your joysticks using the TestJoysticks sketch.
   if ( mode1 ) {
     radioData.throttle = mapJoystickValues( analogRead(A0), 180, 497, 807, true );
@@ -154,27 +154,27 @@ void loop()
 
   radioData.dial1    = constrain( map( analogRead(A7), 968,   27, 0, 255 ), 0, 255);
   radioData.dial2    = constrain( map( analogRead(A6),   1, 1020, 0, 255 ), 0, 255);
-  
+
   radioData.switches = 0;
   if ( ! digitalRead(4) ) radioData.switches |= 0x1;
   if ( ! digitalRead(2) ) radioData.switches |= 0x2;
 
   radio.write(&radioData, sizeof(RadioData));
-  
+
   while ( radio.isAckPayloadAvailable()) {
     radio.read(&ackPayload, sizeof(AckPayload));
     ppsCounter++;
   }
-  
+
   unsigned long now = millis();
   if ( now - lastPPS > 1000 ) {
     pps = ppsCounter;
     ppsCounter = 0;
     lastPPS = now;
   }
-  
+
   adjustAckPayloadValues();
   writeDataToSerial();
-   
+
 }
 
