@@ -23,18 +23,23 @@ def login():
 def init_camera():
     global camera
     camera = picamera.PiCamera()
-    camera.start_preview()
-    time.sleep(3)
 
 
 def shoot_picture(image_name):
+    camera.start_preview()
+    time.sleep(5)
+
     image = 'images/%s.jpg' % image_name
     camera.capture(image)
+
+    camera.stop_preview()
     return image
 
 
 def upload_to_drive(image):
     image_title = os.path.basename(image)
+    print("DEBUG Uploading %s..." % image_title)
+
     staged_image = drive.CreateFile({'title': image_title})
     staged_image.SetContentFile(image)
     staged_image.Upload()
@@ -45,7 +50,7 @@ def upload_to_drive(image):
 def shoot_and_upload_images():
     i = 1
     while True:
-        image_name = 'lepica-%d' % i
+        image_name = 'leopica-%d' % i
         image = shoot_picture(image_name)
         upload_to_drive(image)
 
