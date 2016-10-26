@@ -1,6 +1,10 @@
 # Leopica
 We're all made of stardust!
 
+## Requirement
+
+* Python3
+
 ## Setup
 
 * Enable the camera:
