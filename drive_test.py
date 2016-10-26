@@ -1,5 +1,6 @@
 from pydrive.auth import GoogleAuth
 from pydrive.drive import GoogleDrive
+import os
 
 """
 Google Drive authentication
@@ -21,8 +22,10 @@ Have fun with files and images
 """
 drive = GoogleDrive(gauth)
 
-test_image = drive.CreateFile()
-test_image.SetContentFile('images/test.jpg')
-test_image.Upload()
+test_image = 'images/test.jpg'
+test_image_name = os.path.basename(test_image)
+staged_image = drive.CreateFile({'title': test_image_name})
+staged_image.SetContentFile('images/test.jpg')
+staged_image.Upload()
 print('Uploaded image: \n\ttitle: %s,\n\tmimeType: %s' %
-      (test_image['title'], test_image['mimeType']))
+      (staged_image['title'], staged_image['mimeType']))
