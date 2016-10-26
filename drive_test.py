@@ -22,10 +22,12 @@ Have fun with files and images
 """
 drive = GoogleDrive(gauth)
 
+MOTHERSHIP = "Cansat"
+
 test_image = 'images/test.jpg'
 test_image_name = os.path.basename(test_image)
 staged_image = drive.CreateFile({'title': test_image_name})
-staged_image.SetContentFile('images/test.jpg')
+staged_image.SetContentFile(test_image)
 staged_image.Upload()
 print('Uploaded image: \n\ttitle: %s,\n\tmimeType: %s' %
       (staged_image['title'], staged_image['mimeType']))
