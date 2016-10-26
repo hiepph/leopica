@@ -2,20 +2,17 @@
 We're all made of stardust!
 
 ## Setup
-### Satellite
-+ Uncomment your IMU sensor board in `Multiwii/config.h`.
-For example  with GY-521, I uncomment this line:
+
+* Enable the camera:
+
 ```
-// #define GY_521
-```
-to
-```
-#define GY_521
+sudo raspi-config
 ```
 
-+ Upload `Multiwii/Multiwii.ino` to your satellite arduino controller
+In the menu select **Enable Camera**.
 
-### Ground station
-+ Connect and upload `TelemetryTransmitter/TelemetryTransmitter.ino` to your Arduino controller.
+* Python's libraries:
 
-+ Open `MultiwiiConf/application.windows<32|64>`, choose Arduino connected COM and press `START`.
+```
+$ sudo apt-get install python3-picamera
+```
