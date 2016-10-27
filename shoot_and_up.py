@@ -54,7 +54,6 @@ def shoot_and_upload_images():
         image = shoot_picture(image_name)
         upload_to_drive(image)
 
-        time.sleep(5)
         i += 1
 
 if __name__ == "__main__":
