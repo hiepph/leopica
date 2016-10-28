@@ -30,7 +30,8 @@ def login():
     if gauth.credentials is None:
         gauth.LocalWebserverAuth()
     elif gauth.access_token_expired:
-        gauth.Refresh()
+        os.system("rm .credential")
+        login()
     else:
         gauth.Authorize()
     gauth.SaveCredentialsFile(".credential")
