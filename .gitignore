@@ -1,7 +1,7 @@
 images/
 .ropeproject/
-**/*.json
-**/.credential
-**/.pyc
+.json
+.credential
+.pyc
 __pycache__
-**/.token
+.token
