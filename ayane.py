@@ -13,9 +13,11 @@ def start(bot, update):
     bot.sendMessage(chat_id=update.message.chat_id,
                     text="Konnichiwa. Ayane desu~")
 
+
 def ping(bot, update):
     bot.sendMessage(chat_id=update.message.chat_id,
                     text="Pong")
+
 
 def echo(bot, update):
     bot.sendMessage(chat_id=update.message.chat_id, text=update.message.text)
