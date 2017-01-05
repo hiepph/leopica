@@ -5,3 +5,4 @@ images/
 *.pyc
 __pycache__
 *.token
+*.log

@@ -1,28 +1,17 @@
-#! /usr/bin/python3
-
 import time
-import os
+import os, sys
+import signal
+import logging
 import picamera
 from pydrive.auth import GoogleAuth
 from pydrive.drive import GoogleDrive
 
-import telegram
-import logging
+logging.basicConfig(format='[%(asctime)s] %(levelname)s ($%(name)s) - %(message)s',
+                    level=logging.DEBUG)
 
-bot = telegram.Bot(token=open('telegram.token').read().rstrip())
-logging.basicConfig(format='%(asctime)s - %(name)s \
-                    - %(levelname)s - %(message)s', level=logging.INFO)
-
-RECIPIENT_ID = 226142487
-
-
-def telegram_notify(bot, log):
-    bot.sendMessage(chat_id=RECIPIENT_ID, text=log)
-
-
-def telegram_send_photo(bot, image):
-    bot.sendPhoto(chat_id=RECIPIENT_ID, photo=open(image, 'rb'))
-
+def sigint_handler(signum, frame):
+    logging.info("STOP: SIGINT signal received")
+    sys.exit(1)
 
 def login():
     gauth = GoogleAuth()
@@ -38,38 +27,29 @@ def login():
     global drive
     drive = GoogleDrive(gauth)
 
-
 def init_camera():
+    logging.info("Init camera")
     global camera
     camera = picamera.PiCamera()
 
-
 def shoot_picture(image_name):
     camera.start_preview()
-    time.sleep(5)
+    time.sleep(1) # @todo: Change to 5s in production
 
     image = 'images/%s.jpg' % image_name
     camera.capture(image)
 
     camera.stop_preview()
-    telegram_send_photo(bot, image)
     return image
-
 
 def upload_to_drive(image):
     image_title = os.path.basename(image)
-    log = "INFO Uploading %s..." % image_title
-    print(log)
-    telegram_notify(bot, log)
 
     staged_image = drive.CreateFile({'title': image_title})
     staged_image.SetContentFile(image)
     staged_image.Upload()
-    log = "INFO Uploaded image: { title: %s, mimeType: %s }" % \
-           (staged_image['title'], staged_image['mimeType'])
-    print(log)
-    telegram_notify(bot, log)
-
+    logging.info("Uploaded image: { title: %s, mimeType: %s }",
+                 staged_image['title'], staged_image['mimeType'])
 
 def shoot_and_upload_images():
     i = 1
@@ -80,8 +60,8 @@ def shoot_and_upload_images():
 
         i += 1
 
-
 if __name__ == "__main__":
+    signal.signal(signal.SIGINT, sigint_handler)
     login()
     init_camera()
     shoot_and_upload_images()
