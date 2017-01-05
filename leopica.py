@@ -1,5 +1,6 @@
 import time
-import os
+import os, sys
+import signal
 import logging
 import picamera
 from pydrive.auth import GoogleAuth
@@ -7,6 +8,10 @@ from pydrive.drive import GoogleDrive
 
 logging.basicConfig(format='[%(asctime)s] %(levelname)s ($%(name)s) - %(message)s',
                     level=logging.DEBUG)
+
+def sigint_handler(signum, frame):
+    logging.info("STOP: SIGINT signal received")
+    sys.exit(1)
 
 def login():
     gauth = GoogleAuth()
@@ -56,6 +61,7 @@ def shoot_and_upload_images():
         i += 1
 
 if __name__ == "__main__":
+    signal.signal(signal.SIGINT, sigint_handler)
     login()
     init_camera()
     shoot_and_upload_images()
