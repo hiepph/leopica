@@ -14,7 +14,7 @@
 
 * Python3 (>= `3.4` recommended)
 
-* And some python libraries: `pydrive`, `pydrive`
+* And some python libraries: `pydrive`, `pydrive`, `pyplot`
 
 All can be installed via `pip install <package>`
 
@@ -30,6 +30,10 @@ sudo raspi-config
 
 In the menu select **Enable Camera**.
 
++ Connect to 3G:
+
+A nice tutorial by using Sakis's 3G connect script has been introduced here: https://shkspr.mobi/blog/2012/07/3g-internet-on-raspberry-pi-success/
+
 ### Launch
 
 ```
@@ -37,3 +41,26 @@ In the menu select **Enable Camera**.
 ```
 
 A browser will pop-up and ask for authentication of Google Drive, just filling up and you're good to go.
+
+### Sensor Plotting
+
+For setup, use Python interactive shell for quickly generating a `~/.plotly/.credentials` file:
+
+```
+>>> import plotly
+>>> plotly.tools.set_credentials_file(username='DemoAccount', api_key='lr1c37zw81')
+```
+
+Go to https://plot.ly/settings/api to achieve your api key and stream id, and fill up to credentials file, a complete file will look like this:
+
+    {
+        "api_key": "abcdef123456",
+        "username": "einstein",
+        "stream_ids": [
+            "e=mc2"
+        ],
+        "proxy_username": "",
+        "proxy_password": ""
+    }
+
+More info you can check here: https://plot.ly/python/getting-started/
