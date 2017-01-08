@@ -24,7 +24,7 @@ def read_word_2c(adr):
     else:
         return val
 
-def gyroscope_data():
+def gyro_data():
     gyro_xout = read_word_2c(0x43)
     gyro_yout = read_word_2c(0x45)
     gyro_zout = read_word_2c(0x47)
@@ -32,7 +32,7 @@ def gyroscope_data():
     # [x, y, z]
     return [gyro_xout, gyro_yout, gyro_zout]
 
-def accelerometer_data():
+def accel_data():
     accel_xout = read_word_2c(0x3b)
     accel_yout = read_word_2c(0x3d)
     accel_zout = read_word_2c(0x3f)
@@ -52,7 +52,7 @@ def get_y_rotation(x, y, z):
     return -math.degrees(radians)
 
 def accel_rotation_data():
-    [accel_xout, accel_yout, accel_zout] = accelerometer_data()
+    [accel_xout, accel_yout, accel_zout] = accel_data()
 
     SCALED_FACTOR = 16384.0
     accel_xout_scaled = accel_xout / SCALED_FACTOR
