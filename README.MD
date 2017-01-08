@@ -14,9 +14,12 @@
 
 * Python3 (>= `3.4` recommended)
 
-* And some python libraries: `pydrive`, `pydrive`, `pyplot`
+* `Redis` worker
+
+* Some python libraries: `pydrive`, `pydrive`, `plotly`, `rq`, `rq-dashboard`
 
 All can be installed via `pip install <package>`
+
 
 ## Set things up and running
 
@@ -34,13 +37,23 @@ In the menu select **Enable Camera**.
 
 A nice tutorial by using Sakis's 3G connect script has been introduced here: https://shkspr.mobi/blog/2012/07/3g-internet-on-raspberry-pi-success/
 
-### Launch
+### Redis worker for uploading image
+
+* Activate worker:
 
 ```
-./launch.sh
+rq worker
 ```
 
-A browser will pop-up and ask for authentication of Google Drive, just filling up and you're good to go.
+It will queue upload image command and continually executing it.
+
++ A nice dashboard admin:
+
+```
+rq-dashboard
+```
+
+Open browser and check process following link: `http://localhost:9181`
 
 ### Sensor Plotting
 
