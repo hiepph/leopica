@@ -13,11 +13,10 @@ stream_id = stream_ids[0]
 
 # Make instance of stream id object 
 stream_1 = go.Stream(
-    token=stream_id,  # link stream id to 'token' key
-    maxpoints=80      # keep a max of 80 pts on screen
+    token=stream_id  # link stream id to 'token' key
 )
 
-stream_1 = dict(token=stream_id, maxpoints=60)
+stream_1 = dict(token=stream_id)
 
 # Initialize trace of streaming plot by embedding the unique stream_id
 trace1 = go.Scatter(
@@ -34,8 +33,8 @@ layout = go.Layout(title='Rotation status')
 # Make a figure object
 fig = go.Figure(data=data, layout=layout)
 
-# Send fig to Plotly, initialize streaming plot, open new tab
-py.plot(fig, filename='gy-521')
+# Send fig to Plotly, initialize streaming plot
+py.plot(fig, filename='gy-521', auto_open=False)
 
 # We will provide the stream link object the same token that's associated with the trace we wish to stream to
 s = py.Stream(stream_id)
@@ -43,14 +42,12 @@ s = py.Stream(stream_id)
 # We then open a connection
 s.open()
  
-i = 0    # a counter
-k = 5    # some shape parameter
-
-# Delay start of stream by 5 sec (time to switch tabs)
-time.sleep(5) 
-
 while True:
-    [x, y] = gy_521.rotation_data()
+    # Current time on x-axis 
+    x = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")
+
+    # Accel's y on y-axis
+    y = gy_521.accel_rotation_data()[1]
         
     # Send data to plot
     s.write(dict(x=x, y=y))  
@@ -58,9 +55,7 @@ while True:
     #     Write numbers to stream to append current data on plot,
     #     write lists to overwrite existing data on plot
             
-    # Plot with 100Hz frequency
-    time.sleep(1) 
+    time.sleep(0.1) 
 
 # Close the stream when done plotting
-s.close() # Embed never-ending time series streaming plot
-tls.embed('gy-521','12')
+s.close() 
