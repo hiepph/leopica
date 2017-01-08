@@ -1,66 +1,74 @@
 import datetime 
 import time   
+import logging
 import gy_521
-import plotly
-import numpy as np 
 import plotly.plotly as py  
-import plotly.tools as tls   
+import plotly.tools as tls
 import plotly.graph_objs as go
 
-# Get stream id from stream id list 
+logging.basicConfig(format='[%(asctime)s] %(levelname)s ($%(name)s) - %(message)s',
+                    level=logging.DEBUG)
+
+# Get stream id list 
 stream_ids = tls.get_credentials_file()['stream_ids']
-stream_id = stream_ids[0]
 
-# Make instance of stream id object 
-stream_1 = go.Stream(
-    token=stream_id,  # link stream id to 'token' key
-    maxpoints=80      # keep a max of 80 pts on screen
-)
+# Specify individual name value to display
+names = [
+    'accel_x',
+    'accel_y',
+    'gyro_x',
+    'gyro_y',
+    'gyro_z'
+]
 
-stream_1 = dict(token=stream_id, maxpoints=60)
-
-# Initialize trace of streaming plot by embedding the unique stream_id
-trace1 = go.Scatter(
+# Initialize trace of streaming plot and corresponding data
+data = list(map(lambda stream_id: go.Scatter(
     x=[],
     y=[],
-    mode='lines+markers',
-    stream=stream_1         # (!) embed stream id, 1 per trace
-)
-data = go.Data([trace1])
+    mode='lines',
+    name=names.pop(0),
+    stream=go.Stream(token=stream_id)
+), stream_ids))
 
 # Add title to layout object
-layout = go.Layout(title='Rotation status')
+layout = go.Layout(
+    title='Accelerometer'
+)
 
 # Make a figure object
 fig = go.Figure(data=data, layout=layout)
 
-# Send fig to Plotly, initialize streaming plot, open new tab
-py.plot(fig, filename='gy-521')
+# Send fig to Plotly, initialize streaming plot
+py.plot(fig, filename='gy-521', auto_open=False)
 
 # We will provide the stream link object the same token that's associated with the trace we wish to stream to
-s = py.Stream(stream_id)
+streams = list(map(lambda stream_id: py.Stream(stream_id), stream_ids))
 
 # We then open a connection
-s.open()
+for stream in streams:
+    stream.open()
+    
+logging.info("Start %d streams!", len(streams))
  
-i = 0    # a counter
-k = 5    # some shape parameter
-
-# Delay start of stream by 5 sec (time to switch tabs)
-time.sleep(5) 
-
 while True:
-    [x, y] = gy_521.rotation_data()
-        
+    # Current time on x-axis 
+    x = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")
+
+    # Accelerometer [x, y] + Gyro [x, y, z] on y-axes
+    # y = [accel_x, accel_y, gyro_x, gyro_y, gyro_z]
+    y = gy_521.accel_rotation_data()
+    y.extend(gy_521.gyro_data())
+
     # Send data to plot
-    s.write(dict(x=x, y=y))  
+    for (idx, stream) in enumerate(streams):
+        stream.write(dict(x=x, y=y[idx]))
     
     #     Write numbers to stream to append current data on plot,
     #     write lists to overwrite existing data on plot
-            
-    # Plot with 100Hz frequency
-    time.sleep(1) 
+           
+    # 0.1s update frequency
+    time.sleep(0.1) 
 
 # Close the stream when done plotting
-s.close() # Embed never-ending time series streaming plot
-tls.embed('gy-521','12')
+for stream in streams:
+    stream.close()
