@@ -1,7 +1,7 @@
 import datetime 
 import time   
 import logging
-import gy_521
+import Adafruit_DHT as dht
 import plotly.plotly as py  
 import plotly.tools as tls
 import plotly.graph_objs as go
@@ -10,36 +10,34 @@ logging.basicConfig(format='[%(asctime)s] %(levelname)s ($%(name)s) - %(message)
                     level=logging.DEBUG)
 
 # Get stream id list 
-stream_ids = tls.get_credentials_file()['stream_ids']
+# Only get 6th, 7th token for DHT
+stream_ids = tls.get_credentials_file()['stream_ids'][5:]
 
 # Specify individual name value to display
 names = [
-    'accel_x',
-    'accel_y',
-    'gyro_x',
-    'gyro_y',
-    'gyro_z'
+    'humidity',
+    'temperature'
 ]
 
 # Initialize trace of streaming plot and corresponding data
 data = list(map(lambda stream_id: go.Scatter(
     x=[],
     y=[],
-    mode='lines',
+    mode='lines+markers',
     name=names.pop(0),
     stream=go.Stream(token=stream_id)
 ), stream_ids))
 
 # Add title to layout object
 layout = go.Layout(
-    title='Accelerometer'
+    title='DHT22: Humidity + Temperature'
 )
 
 # Make a figure object
 fig = go.Figure(data=data, layout=layout)
 
 # Send fig to Plotly, initialize streaming plot
-py.plot(fig, filename='gy-521', auto_open=False)
+py.plot(fig, filename='dht-22', auto_open=False)
 
 # We will provide the stream link object the same token that's associated with the trace we wish to stream to
 streams = list(map(lambda stream_id: py.Stream(stream_id), stream_ids))
@@ -53,11 +51,11 @@ logging.info("Start %d streams!", len(streams))
 while True:
     # Current time on x-axis 
     x = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")
-
-    # Accelerometer [x, y] + Gyro [x, y, z] on y-axes
-    # y = [accel_x, accel_y, gyro_x, gyro_y, gyro_z]
-    y = gy_521.accel_rotation_data()
-    y.extend(gy_521.gyro_data())
+    
+    # Humidity + Temperature on y-axes
+    # DHT22's data pin on GPIO 4
+    humid, temp = dht.read_retry(dht.DHT22, 4)
+    y = [humid, temp]
 
     # Send data to plot
     for (idx, stream) in enumerate(streams):
