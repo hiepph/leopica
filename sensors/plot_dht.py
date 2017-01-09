@@ -69,4 +69,4 @@ while True:
 
 # Close the stream when done plotting
 for stream in streams:
-    stream.close()
+   stream.close()
