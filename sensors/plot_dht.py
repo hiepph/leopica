@@ -53,9 +53,9 @@ while True:
     x = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")
     
     # Humidity + Temperature on y-axes
+    # y = [humidity, temperature]
     # DHT22's data pin on GPIO 4
-    humid, temp = dht.read_retry(dht.DHT22, 4)
-    y = [humid, temp]
+    y = dht.read_retry(dht.DHT22, 4)
 
     # Send data to plot
     for (idx, stream) in enumerate(streams):
