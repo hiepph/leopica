@@ -10,7 +10,8 @@ logging.basicConfig(format='[%(asctime)s] %(levelname)s ($%(name)s) - %(message)
                     level=logging.DEBUG)
 
 # Get stream id list 
-stream_ids = tls.get_credentials_file()['stream_ids']
+# Only get 5 tokens for GY only
+stream_ids = tls.get_credentials_file()['stream_ids'][:5]
 
 # Specify individual name value to display
 names = [
@@ -32,7 +33,7 @@ data = list(map(lambda stream_id: go.Scatter(
 
 # Add title to layout object
 layout = go.Layout(
-    title='Accelerometer'
+    title='GY_521: Accelerometer + Gyroscope'
 )
 
 # Make a figure object
