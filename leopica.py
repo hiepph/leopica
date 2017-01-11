@@ -11,8 +11,13 @@ logging.basicConfig(format='[%(asctime)s] %(levelname)s ($%(name)s) - %(message)
 def shoot_and_upload_images(uploader, delay=5):
     with picamera.PiCamera() as camera:
         logging.info("Setting up camera.")
+
+        # veritcal flip
+        camera.vflip = True
+
         # 1s shutter speed
         camera.shutter_speed = 1000000
+
         # camera.start_preview()
 
         # Wait for the automatic gain control to settle
@@ -31,4 +36,4 @@ if __name__ == "__main__":
     logging.info("Login to Drive Account")
     upload = Upload()
 
-    shoot_and_upload_images(upload, 1)
+    shoot_and_upload_images(upload)
