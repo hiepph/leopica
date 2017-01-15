@@ -1,6 +1,8 @@
 # Leopica
 
-**WIP**
+The name of the satellite joined in Vietnam CANSAT 2016 (Satellite in a can).
+
+This is the source code of it.
 
 ## Requirement
 
@@ -16,7 +18,7 @@
 
 * `Redis` worker
 
-* Some python libraries: `pydrive`, `pydrive`, `plotly`, `rq`, `rq-dashboard`
+* Some python libraries: `pydrive`, `plotly`, `rq`, `rq-dashboard`
 
 All can be installed via `pip install <package>`
 
